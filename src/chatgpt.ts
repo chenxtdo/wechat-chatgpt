@@ -69,9 +69,13 @@ export class ChatGPTPool {
         ...account,
         proxyServer: config.openAIProxy,
       });
-      console.log('chatGpt login success')
       try {
-        await chatGpt.initSession();
+        await AsyncRetry(
+          async () => {
+            await chatGpt.initSession();
+          },
+          { retries: 3 }
+        );
         chatGPTPools.push({
           chatGpt: chatGpt,
           account: account,
